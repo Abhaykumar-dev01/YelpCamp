@@ -13,7 +13,9 @@ mongoose.connect('mongodb://127.0.0.1:27017/yelp-camp')
     })
 
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'))
+app.set('views', path.join(__dirname, 'views'));
+
+app.use(express.urlencoded({ extended: true }))
 
 app.get('/', (req, res) => {
     res.render('home');
@@ -24,8 +26,15 @@ app.get('/campgrounds', async (req, res) => {
     res.render('campgrounds/index', { campgrounds });
 })
 
-app.get('/campgrounds/new', async (req, res) => {
+app.get('/campgrounds/new', (req, res) => {
     res.render('campgrounds/new');
+})
+
+app.post('/campgrounds', async (req, res) => {
+    console.log(req.body.campground)
+    const campground = new Campground(req.body.campground);
+    await campground.save();
+    res.redirect(`/campgrounds/${campground._id}`)
 })
 
 
